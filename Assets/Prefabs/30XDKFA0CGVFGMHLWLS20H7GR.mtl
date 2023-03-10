@@ -1,0 +1,63 @@
+newmtl ModelMaterial59_Material001
+Ka 0.000000 0.000000 0.000000
+Kd 0.698039 0.698039 0.698039
+Ks 0.000000 0.000000 0.000000
+d 1.000000
+illum 2
+Ns 9.84916
+map_Kd T_GreyMatter_BC.png
+
+newmtl ModelMaterial64_Material002
+Ka 0.000000 0.000000 0.000000
+Kd 0.698039 0.698039 0.698039
+Ks 0.000000 0.000000 0.000000
+d 1.000000
+illum 2
+Ns 9.84916
+map_Kd T_GreyMatter_RayGunEffect_BC.png
+
+newmtl ModelMaterial61_Material003
+Ka 0.000000 0.000000 0.000000
+Kd 0.698039 0.698039 0.698039
+Ks 0.000000 0.000000 0.000000
+d 1.000000
+illum 2
+Ns 9.84916
+map_Kd T_GreyMatter_RayGun_BC.png
+
+newmtl ModelMaterial58_Material004
+Ka 0.000000 0.000000 0.000000
+Kd 0.698039 0.698039 0.698039
+Ks 0.000000 0.000000 0.000000
+d 1.000000
+illum 2
+Ns 9.84916
+map_Kd T_GreyMatter_BC.png
+
+newmtl ModelMaterial57_Material005
+Ka 0.000000 0.000000 0.000000
+Kd 0.698039 0.698039 0.698039
+Ks 0.000000 0.000000 0.000000
+d 1.000000
+illum 2
+Ns 9.84916
+map_Kd T_GreyMatter_BC.png
+
+newmtl ModelMaterial62_Material006
+Ka 0.000000 0.000000 0.000000
+Kd 0.698039 0.698039 0.698039
+Ks 0.000000 0.000000 0.000000
+d 1.000000
+illum 2
+Ns 9.84916
+map_Kd T_GreyMatter_RayGunEffect_BC.png
+
+newmtl ModelMaterial60_Material007
+Ka 0.000000 0.000000 0.000000
+Kd 0.698039 0.698039 0.698039
+Ks 0.000000 0.000000 0.000000
+d 1.000000
+illum 2
+Ns 9.84916
+map_Kd T_GreyMatter_RayGun_BC.png
+
