@@ -95,7 +95,7 @@ public class MotionDriver : MonoBehaviour
             _objMotionDriver = obj.GetComponent<MotionDriver>();
             if (_objMotionDriver == true)
             {
-                GameObject mainCamera = GameObject.Find("Main Camera");
+                //GameObject mainCamera = GameObject.Find("Main Camera");
                 foreach (Transform child in obj.transform)
                 {
                     if (child.CompareTag("eye")) _eye = child.gameObject;
@@ -103,18 +103,15 @@ public class MotionDriver : MonoBehaviour
 
                 if (_eye == true)
                 {
-                    if (mainCamera == true)
-                    {
                         //mainCamera.transform.parent = null;
                         //UnityEngine.Camera.main.transform
-                        mainCamera.transform.SetParent(_eye.transform, false);
-                        mainCamera.transform.position = _eye.transform.position;
+                        UnityEngine.Camera.main.transform.SetParent(_eye.transform, false);
+                        UnityEngine.Camera.main.transform.position = _eye.transform.position;
                         //mainCamera.transform.localPosition = eye.transform.localPosition;
-                        mainCamera.transform.rotation = _eye.transform.rotation;
+                        UnityEngine.Camera.main.transform.rotation = _eye.transform.rotation;
                         CameraHere = false;
                         _objMotionDriver.CameraHere = true;
-                    }
-                    else print("ATTANTION: camera not found");
+
                 }
                 else print("ATTANTION: eye not found");
             }

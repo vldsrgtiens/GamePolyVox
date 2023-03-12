@@ -19,7 +19,20 @@ public class HexGrid : MonoBehaviour {
 
 	Canvas gridCanvas;
 
-	void Start () {
+	void Start ()
+	{
+		Vector3 center = HexMetrics.GetPositionCenterFromHW(2, 1);
+		print("center: "+center+"  :  "+HexMetrics.GetPositionNumFromXY(13.2f,8f));
+		print("1. 12:"+HexMetrics.GetPositionNumFromXY(13.2f-4.2f, 8f+3.9f));
+		print("2. 13:"+HexMetrics.GetPositionNumFromXY(13.2f-4.2f, 8f+0.1f));
+		print("3. 13:"+HexMetrics.GetPositionNumFromXY(13.2f-4.2f, 8f-0.1f));
+		print("4. 1:"+HexMetrics.GetPositionNumFromXY(13.2f-4.2f, 8f-3.9f));
+		print("5. 14:"+HexMetrics.GetPositionNumFromXY(13.2f+4.2f, 8f+3.9f));
+		print("6. 13:"+HexMetrics.GetPositionNumFromXY(13.2f+4.2f, 8f+0.1f));
+		print("7. 13:"+HexMetrics.GetPositionNumFromXY(13.2f+4.2f, 8f-0.1f));
+		print("8. 3:"+HexMetrics.GetPositionNumFromXY(13.2f+4.2f, 8f-3.9f));
+		
+		
 		gridCanvas = GetComponentInChildren<Canvas>();
 
 		cells = new HexCell[MapHex.Height * MapHex.Width];
@@ -93,7 +106,7 @@ public class HexGrid : MonoBehaviour {
 		float iRot=0f;
 		for (int z = 0, i = 0; z < MapHex.Height; z++)
 			for (int x = 0; x < MapHex.Width; x++ ) {
-				Vector3 position = HexMetrics.GetPositionXYFromHW(x, z);
+				Vector3 position = HexMetrics.GetPositionCenterFromHW(x, z);
 				cells[i].layer0 = ObjectList.AddItem(position, 0f,grass);
 
 				if (MapHex.GridFull[x, z].Length == 2)
@@ -138,7 +151,7 @@ public class HexGrid : MonoBehaviour {
 	
 	void CreateCell (int x, int z, int i)
 	{
-		Vector3 position = HexMetrics.GetPositionXYFromHW(x, z);
+		Vector3 position = HexMetrics.GetPositionCenterFromHW(x, z);
 
 		HexCell cell = cells[i] = Instantiate<HexCell>(cellPrefab);
 		cell.transform.SetParent(transform, false);
