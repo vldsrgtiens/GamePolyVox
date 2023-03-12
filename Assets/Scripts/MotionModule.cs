@@ -22,12 +22,7 @@ public class MotionModule : MonoBehaviour
     {
         mm_Rigidbody = GetComponent<Rigidbody>();
         mm_ObjectItem = GetComponent<ObjectItem>();
-
         mmSpeed = mm_ObjectItem.speed;
-
-        //RotateTo(Compass.TypeDirection.SouthEast);
-        
-        Debug.Log("MotionDrive Awake() was called");
     }
     
     void FixedUpdate()
@@ -44,7 +39,6 @@ public class MotionModule : MonoBehaviour
             {
                 mmStatus = GlobalVariables.MotionStatus.IsBeforeTargetPosition;
             }
-            //print("position: "+transform.position);
             mm_Rigidbody.MovePosition(transform.position + heading * step);
         }
         
@@ -75,7 +69,7 @@ public class MotionModule : MonoBehaviour
 
             float _rot = (mmSpeed / 5) * directionOfRotation;
             
-            if (_delta < 2.0f) 
+            if (_delta < 1.0f) 
             {
                 mmStatus = GlobalVariables.MotionStatus.IsBeforeTargetRotation;
             }

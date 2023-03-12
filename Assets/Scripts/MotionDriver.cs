@@ -5,27 +5,28 @@ using UnityEngine;
 
 public class MotionDriver : MonoBehaviour
 {
-    private GameObject obj;
-    private GameObject mainCamera;//MainCamera
-    private GameObject eye;
-    private MotionDriver objMotionDriver;
+    private MotionDriver _objMotionDriver;
     private MotionModule _myMotionModule;
+    private ObjectItem _myObjectItem;
+    private GameObject _eye;
+    private int currentNumCell = -1;
+    private int targetNumCell = -1;
 
     public bool CameraHere = false;
+    public bool CameraOutside = false;
     
     // Start is called before the first frame update
     void Awake()
     {
         _myMotionModule = GetComponent<MotionModule>();
+        _myObjectItem = GetComponent<ObjectItem>();
         if (_myMotionModule == null)
         {
-            print("ATTANTION: MotionModule отсутствует");
+            Debug.Log("ATTANTION: MotionModule отсутствует");
         }
-        if (this.tag == "Hero")
+        if (this.CompareTag("Hero"))
         {
-            print("My name is "+transform.name);
             SetCameraTo("Hero");
-
         }
     }
 
@@ -33,8 +34,11 @@ public class MotionDriver : MonoBehaviour
     {
         if (CameraHere)
         {
-            if (Input.GetKey(KeyCode.W) && _myMotionModule.mmStatus==GlobalVariables.MotionStatus.IsWaiting) {
-                _myMotionModule.MoveForward( transform.position+transform.forward*(HexMetrics.innerRadius*2));
+            if (Input.GetKey(KeyCode.W) && _myMotionModule.mmStatus==GlobalVariables.MotionStatus.IsWaiting)
+            {
+                if (CheckFreeDestinationCell())
+                    _myMotionModule.MoveForward( transform.position+transform.forward*(HexMetrics.innerRadius*2));
+                
             }
             if (Input.GetKey(KeyCode.D) && _myMotionModule.mmStatus==GlobalVariables.MotionStatus.IsWaiting) {
                 _myMotionModule.RotateToRight();
@@ -46,7 +50,16 @@ public class MotionDriver : MonoBehaviour
                 SetCameraTo("Robot_1");
                 //Escape  
             }
+            if (Input.GetKey(KeyCode.C))
+            {
+                GameObject mainCamera = GameObject.Find("Main Camera");
+                Vector3 outside = transform.forward * 3f;
+                outside.y = outside.y - 3f;
+                if (!CameraOutside) outside = outside * -1f;
+                mainCamera.transform.localPosition = mainCamera.transform.localPosition  + outside;
+                CameraOutside = !CameraOutside;
 
+            }
             if (Input.GetKey(KeyCode.Escape) && this.tag != "Hero")
             {
                 SetCameraTo("Hero");
@@ -54,50 +67,58 @@ public class MotionDriver : MonoBehaviour
         }
     }
 
+    bool CheckFreeDestinationCell()
+    {
+        int nowCell = HexMetrics.GetPositionNumFromXY(transform.position.x, transform.position.z);
+        int targetCell = HexGrid.cells[nowCell].neighbors[(int)_myObjectItem.direction];
+        if (targetCell >= 0)
+        {
+            print("nowCell="+nowCell+"  targetCell="+targetCell+" direction="+_myObjectItem.direction);
+            return true;
+        }
+        else
+        {
+            print("nowCell="+nowCell+"  targetCell="+targetCell+" direction="+_myObjectItem.direction);
+            print("ATTANTION: впереди БЕЗДНА");
+            return false;
+        }
+        
+        
+    }
+
     void SetCameraTo(string nameOfTheObject)
     {
-        obj = null;
-        obj=GameObject.Find(nameOfTheObject);
-        
+        GameObject obj=GameObject.Find(nameOfTheObject);
+        _eye = null;        
         if (obj ==true)
         {
-            print("obj "+obj.name+" found "+obj.transform.position);
-            objMotionDriver = obj.GetComponent<MotionDriver>();
-            if (objMotionDriver==true) print("MotionDriver  found");   
-            mainCamera = GameObject.Find("Main Camera");
-            eye = null;
-            
-            foreach (Transform child in obj.transform)
+            _objMotionDriver = obj.GetComponent<MotionDriver>();
+            if (_objMotionDriver == true)
             {
-                if (child.tag=="eye")
+                GameObject mainCamera = GameObject.Find("Main Camera");
+                foreach (Transform child in obj.transform)
                 {
-                     eye = child.gameObject;
-                     print("eye found "+eye.transform.position);
+                    if (child.CompareTag("eye")) _eye = child.gameObject;
                 }
-            }
-            if (eye ==true)
-            {
-                if (mainCamera ==true)
+
+                if (_eye == true)
                 {
-                    
-                    print("camera found");
-                    //mainCamera.transform.parent = null;
-                    //UnityEngine.Camera.main.transform
-                    mainCamera.transform.SetParent(eye.transform,false);
-                    mainCamera.transform.position = eye.transform.position;
-                    //mainCamera.transform.localPosition = eyeTransform.localPosition;
-                    //mainCamera.transform.rotation = eyeTransform.rotation;
-                    CameraHere = false;
-                    objMotionDriver.CameraHere = true;
-                    print("set parent camera to "+mainCamera.transform.parent.tag);
-                    
+                    if (mainCamera == true)
+                    {
+                        //mainCamera.transform.parent = null;
+                        //UnityEngine.Camera.main.transform
+                        mainCamera.transform.SetParent(_eye.transform, false);
+                        mainCamera.transform.position = _eye.transform.position;
+                        //mainCamera.transform.localPosition = eye.transform.localPosition;
+                        mainCamera.transform.rotation = _eye.transform.rotation;
+                        CameraHere = false;
+                        _objMotionDriver.CameraHere = true;
+                    }
+                    else print("ATTANTION: camera not found");
                 }
-                else print("ATTANTION: camera not found");
+                else print("ATTANTION: eye not found");
             }
-            else
-            {
-                print("ATTANTION: eye not found");
-            }
+            else print("ATTANTION: MotionDriver not found");
         }
     }
 }

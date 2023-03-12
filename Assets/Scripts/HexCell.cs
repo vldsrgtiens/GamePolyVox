@@ -4,10 +4,11 @@ using UnityEngine;
 
 public class HexCell : MonoBehaviour
 {
-    public float variableHC=555f;
-    public int MyIndex = -1;
-    public int canMove = 2; //0-не проходная клетка 1-не открытая клетка
-                            //2-проходная свободна 3-проходная занята
+    public GameObject myHexCanvas;
+    public int myIndex = -1;
+    public Vector3 myPosition;
+    public int canMove = 2; //0-не открытая клетка 1-не проходная клетка
+                            //2-проходная занята 3-проходная свободна
 
     public int layer0=-1;
     public int layer1=-1;

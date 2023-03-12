@@ -4,6 +4,7 @@ using UnityEngine.UI;
 public class HexGrid : MonoBehaviour {
 	
 	public HexCell cellPrefab;
+	public GameObject hexCanvasPrefab;
 	public ObjectItem grass;
 	public ObjectItem stenaLevel1;
 	public ObjectItem stenaLevel2;
@@ -32,6 +33,52 @@ public class HexGrid : MonoBehaviour {
 			}
 		}
 		
+		for (int z = 0, i = 0; z < MapHex.Height; z++) {
+			for (int x = 0; x < MapHex.Width; x++)
+			{
+				if (x % 2 == 0)
+				{
+					cells[HexMetrics.GetPositionNumFromHW(x, z)].neighbors[0] =
+						HexMetrics.GetPositionNumFromHW(x, z+1);
+					cells[HexMetrics.GetPositionNumFromHW(x, z)].neighbors[1] =
+						HexMetrics.GetPositionNumFromHW(x + 1, z);
+					cells[HexMetrics.GetPositionNumFromHW(x, z)].neighbors[2] =
+						HexMetrics.GetPositionNumFromHW(x + 1, z-1);
+					cells[HexMetrics.GetPositionNumFromHW(x, z)].neighbors[3] =
+						HexMetrics.GetPositionNumFromHW(x, z - 1);
+					cells[HexMetrics.GetPositionNumFromHW(x, z)].neighbors[4] =
+						HexMetrics.GetPositionNumFromHW(x - 1, z-1);
+					cells[HexMetrics.GetPositionNumFromHW(x, z)].neighbors[5] =
+						HexMetrics.GetPositionNumFromHW(x - 1, z);
+				}
+				else
+				{
+					cells[HexMetrics.GetPositionNumFromHW(x, z)].neighbors[0] =
+						HexMetrics.GetPositionNumFromHW(x, z + 1);
+					cells[HexMetrics.GetPositionNumFromHW(x, z)].neighbors[1] =
+						HexMetrics.GetPositionNumFromHW(x + 1, z + 1);
+					cells[HexMetrics.GetPositionNumFromHW(x, z)].neighbors[2] =
+						HexMetrics.GetPositionNumFromHW(x + 1, z);
+					cells[HexMetrics.GetPositionNumFromHW(x, z)].neighbors[3] =
+						HexMetrics.GetPositionNumFromHW(x, z - 1);
+					cells[HexMetrics.GetPositionNumFromHW(x, z)].neighbors[4] =
+						HexMetrics.GetPositionNumFromHW(x - 1, z);
+					cells[HexMetrics.GetPositionNumFromHW(x, z)].neighbors[5] =
+						HexMetrics.GetPositionNumFromHW(x - 1, z + 1);
+				}
+			}
+		}
+
+		for (int i = 0; i < MapHex.Height * MapHex.Width; i++)
+		{
+			string str = "";
+			for (int x = 0; x < 6; x++)
+			{
+				str = str + ":" + cells[i].neighbors[x];
+			}
+			print("cells[" + i + "]  "+str);
+		}
+
 		FillTerrain();
 		
 		
@@ -46,7 +93,7 @@ public class HexGrid : MonoBehaviour {
 		float iRot=0f;
 		for (int z = 0, i = 0; z < MapHex.Height; z++)
 			for (int x = 0; x < MapHex.Width; x++ ) {
-				Vector3 position = GetPositionXZ(x, z);
+				Vector3 position = HexMetrics.GetPositionXYFromHW(x, z);
 				cells[i].layer0 = ObjectList.AddItem(position, 0f,grass);
 
 				if (MapHex.GridFull[x, z].Length == 2)
@@ -91,35 +138,25 @@ public class HexGrid : MonoBehaviour {
 	
 	void CreateCell (int x, int z, int i)
 	{
-		Vector3 position = GetPositionXZ(x, z);
+		Vector3 position = HexMetrics.GetPositionXYFromHW(x, z);
 
 		HexCell cell = cells[i] = Instantiate<HexCell>(cellPrefab);
 		cell.transform.SetParent(transform, false);
 		cell.transform.localPosition = position;
-		cells[i].MyIndex = i;
+		cells[i].myIndex = i;
+		cells[i].myPosition = position;
+		cells[i].myHexCanvas = Instantiate<GameObject>(hexCanvasPrefab);
+		cells[i].myHexCanvas.transform.position=position+new Vector3(0f,0.1f,0f);
+		//cells[i].myHexCanvas.transform.position=position;
+		
+		
 
 		Text label = Instantiate<Text>(cellLabelPrefab);
 		label.rectTransform.SetParent(gridCanvas.transform, false);
 		label.rectTransform.anchoredPosition =
 			new Vector2(position.x, position.z);
-		label.text = x.ToString() + ":" + z.ToString();
+		label.text = x.ToString() + ":" + z.ToString()+"\n["+i+"]";
 	}
 
-	Vector3 GetPositionXZ(int x, int z)
-	{
-		Vector3 position;
-		position.y = 0f;
-		position.z = (z + x * 0.5f - x / 2) * (HexMetrics.innerRadius * 2f);
-		position.x = x * (HexMetrics.outerRadius * 1.5f);
-		return position;
-	}
 
-	Vector3 GetPositionNum(int num)
-	{
-		Vector3 position;
-		position.y = 0f;
-		position.x = 0f;
-		position.z = 0f;
-		return position;
-	}
 }

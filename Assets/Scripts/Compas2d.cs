@@ -18,7 +18,7 @@ public class Compas2d : MonoBehaviour
         }
 
         public static implicit operator Angle(float it) => new(it);
-        public static implicit operator int(Angle it) => it._angle;
+        public static implicit operator float(Angle it) => it._angle;
 
         public override string ToString() => $"{_angle}°";
 
@@ -26,7 +26,7 @@ public class Compas2d : MonoBehaviour
 
         public static Angle operator -(Angle a, Angle b) => a._angle - b._angle;
 
-        public int Difference(Angle other)
+        public float Difference(Angle other)
         {
             return (other - this)._angle switch
             {
