@@ -7,93 +7,89 @@ using UnityEngine;
 public class MotionModule : MonoBehaviour
 {
     public GlobalVariables.MotionStatus mmStatus = GlobalVariables.MotionStatus.IsWaiting;
-    public Vector3 mmTargetPosition = Vector3.zero;
+    public GlobalVariables.MotionStatus mmBeforeStatus = GlobalVariables.MotionStatus.IsWaiting;
+    public bool statusChangeIndicator = false;
+    public int mmTargetCellPosition = -1;
     public Compass.TypeDirection mmTargetDirection;
+    private float _mmSpeed;
+    private float _directionOfRotation = 1f;
+    private float _oldRotation = 360f;
 
-    private float mmSpeed;
-    private float directionOfRotation = 1f;
-    private float oldRotation = 360f;
-
-    Rigidbody mm_Rigidbody;
-    Transform mm_Transform;
-    ObjectItem mm_ObjectItem;
+    Rigidbody _mmRigidbody;
+    Transform _mmTransform;
+    ObjectItem _mmObjectItem;
 
     void Awake()
     {
-        mm_Rigidbody = GetComponent<Rigidbody>();
-        mm_ObjectItem = GetComponent<ObjectItem>();
-        mmSpeed = mm_ObjectItem.speed;
+        _mmRigidbody = GetComponent<Rigidbody>();
+        _mmObjectItem = GetComponent<ObjectItem>();
+        _mmSpeed = _mmObjectItem.speed;
     }
     
     void FixedUpdate()
     {
+        
+        
+        if (mmStatus == GlobalVariables.MotionStatus.IsWaiting)
+        {
+            
+        }
+        
+        //==============================
+        
         if (mmStatus == GlobalVariables.MotionStatus.IsMoving )
         {
             // вектор направления к цели. вектор надо нормализовать, чтобы скорость была постоянной, иначе она будет зависеть от расстояния.
-            Vector3 heading = (mmTargetPosition - transform.position).normalized;
-            float step = Time.deltaTime * mmSpeed;
-
-            float dist_toTarget = Vector3.Distance(mmTargetPosition, transform.position + heading * step);
-            
-            if (dist_toTarget < step) 
+            Vector3 heading = (HexMetrics.GetPositionCenterFromNum(mmTargetCellPosition) - transform.position).normalized;
+            float step = Time.deltaTime * _mmSpeed;
+            float dist_toTarget = Vector3.Distance(HexMetrics.GetPositionCenterFromNum(mmTargetCellPosition), transform.position + heading * step);
+            if (dist_toTarget <= 2*step) 
             {
-                mmStatus = GlobalVariables.MotionStatus.IsBeforeTargetPosition;
+                changeStatus(GlobalVariables.MotionStatus.IsBeforeTargetPosition);
             }
-            mm_Rigidbody.MovePosition(transform.position + heading * step);
+            _mmRigidbody.MovePosition(transform.position + heading * step);
         }
         
         //==============================
 
         if (mmStatus == GlobalVariables.MotionStatus.IsBeforeTargetPosition)
         {
-            mm_Rigidbody.position = mmTargetPosition;
-            mm_Rigidbody.velocity = Vector3.zero; 
-            mmStatus = GlobalVariables.MotionStatus.IsWaiting;
+            _mmRigidbody.position = HexMetrics.GetPositionCenterFromNum(mmTargetCellPosition);
+            _mmRigidbody.velocity = Vector3.zero;
+            _mmObjectItem.CurrentCellPosition = mmTargetCellPosition;
+            changeStatus(GlobalVariables.MotionStatus.IsWaiting);
         } 
-        
-        //==============================
-        
-        if (mmStatus == GlobalVariables.MotionStatus.IsWaiting)
-        {
-            //mmTargetPosition=transform.position+(2*(new Vector3(40f,0f,0f)-transform.position));
-            //mmStatus = GlobalVariables.MotionStatus.isMoving;
-        }
-        
+
         //==============================
         
         if (mmStatus == GlobalVariables.MotionStatus.IsRotating )
         {
-            //mmTargeDirectionV3 = Compass.DirectionToVector3(mmTargetDirection);
-            
-            float _delta = MathF.Abs((GlobalVariables.angleRotate * (int)mmTargetDirection) - oldRotation) ;
-
-            float _rot = (mmSpeed / 5) * directionOfRotation;
-            
-            if (_delta < 1.0f) 
+            float _delta = MathF.Abs((GlobalVariables.angleRotate * (int)mmTargetDirection) - _oldRotation) ;
+            float _rot = (_mmSpeed / 5) * _directionOfRotation;
+            if (_delta < 1.5f) 
             {
-                mmStatus = GlobalVariables.MotionStatus.IsBeforeTargetRotation;
+                changeStatus(GlobalVariables.MotionStatus.IsBeforeTargetRotation);
             }
-
             transform.Rotate(0f,_rot,0f);
-            oldRotation = transform.eulerAngles.y;
+            _oldRotation = transform.eulerAngles.y;
         }
         
         //==============================
 
         if (mmStatus == GlobalVariables.MotionStatus.IsBeforeTargetRotation)
         {
-            Vector3 rotate = transform.eulerAngles;
-            rotate.y = 60.0f * (int)mmTargetDirection;
-            transform.rotation = Quaternion.Euler(rotate);
-            mm_ObjectItem.direction = mmTargetDirection;
-            mmStatus = GlobalVariables.MotionStatus.IsWaiting;
+            Vector3 _rotate = transform.eulerAngles;
+            _rotate.y = 60.0f * (int)mmTargetDirection;
+            transform.rotation = Quaternion.Euler(_rotate);
+            _mmObjectItem.direction = mmTargetDirection;
+            changeStatus(GlobalVariables.MotionStatus.IsWaiting);
         }
     }
 
-    public void MoveForward(Vector3 target)
+    public void MoveForward(int targetCell)
     {
-        mmTargetPosition = target;
-        mmStatus=GlobalVariables.MotionStatus.IsMoving;
+        mmTargetCellPosition = targetCell;
+        changeStatus(GlobalVariables.MotionStatus.IsMoving);
     }
         
     public void MoveBack(Rigidbody rb,Vector3 vector3To, float speed)
@@ -105,31 +101,39 @@ public class MotionModule : MonoBehaviour
     public void RotateToLeft()
     {
         //player.transform.RotateAround(player.transform.position,player.transform.up,_rotation_y*Time.deltaTime);
-        mmTargetDirection = Compass.RotateToLeft(mm_ObjectItem.direction);
-        oldRotation = GlobalVariables.angleRotate * (int)mm_ObjectItem.direction;
-        directionOfRotation = -1f;
-        mmStatus = GlobalVariables.MotionStatus.IsRotating;
+        mmTargetDirection = Compass.RotateToLeft(_mmObjectItem.direction);
+        _oldRotation = GlobalVariables.angleRotate * (int)_mmObjectItem.direction;
+        _directionOfRotation = -1f;
+        changeStatus(GlobalVariables.MotionStatus.IsRotating);
     }
     public void RotateToRight()
     {
         //player.transform.RotateAround(player.transform.position,player.transform.up,_rotation_y*Time.deltaTime);
-        mmTargetDirection = Compass.RotateToRight(mm_ObjectItem.direction);
-        oldRotation = GlobalVariables.angleRotate * (int)mm_ObjectItem.direction;
-        directionOfRotation = 1f;
-        mmStatus = GlobalVariables.MotionStatus.IsRotating;
+        mmTargetDirection = Compass.RotateToRight(_mmObjectItem.direction);
+        _oldRotation = GlobalVariables.angleRotate * (int)_mmObjectItem.direction;
+        _directionOfRotation = 1f;
+        changeStatus(GlobalVariables.MotionStatus.IsRotating);
+    }
+
+    public void changeStatus(GlobalVariables.MotionStatus newStatus)
+    {
+        mmBeforeStatus = mmStatus;
+        mmStatus = newStatus;
+        print(transform.tag+": changeStatus from "+mmBeforeStatus+" to "+mmStatus);
+        statusChangeIndicator = true;
     }
     
     public void RotateTo(Compass.TypeDirection target)
     {
         //player.transform.RotateAround(player.transform.position,player.transform.up,_rotation_y*Time.deltaTime);
         mmTargetDirection = target;
-        oldRotation = GlobalVariables.angleRotate * (int)mm_ObjectItem.direction;
-        float t1 = Mathf.Abs(((int)mmTargetDirection * GlobalVariables.angleRotate) - (oldRotation));
-        float t2 = Mathf.Abs((int)mmTargetDirection * GlobalVariables.angleRotate - (360f + oldRotation));
+        _oldRotation = GlobalVariables.angleRotate * (int)_mmObjectItem.direction;
+        float t1 = Mathf.Abs(((int)mmTargetDirection * GlobalVariables.angleRotate) - (_oldRotation));
+        float t2 = Mathf.Abs((int)mmTargetDirection * GlobalVariables.angleRotate - (360f + _oldRotation));
         if (t1 < t2)
-            directionOfRotation = 1f;
+            _directionOfRotation = 1f;
         else
-            directionOfRotation = -1f;
-        mmStatus = GlobalVariables.MotionStatus.IsRotating;
+            _directionOfRotation = -1f;
+
     }
 }

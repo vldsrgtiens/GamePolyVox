@@ -9,11 +9,11 @@ public class MotionDriver : MonoBehaviour
     private MotionModule _myMotionModule;
     private ObjectItem _myObjectItem;
     private GameObject _eye;
-    private int currentNumCell = -1;
-    private int targetNumCell = -1;
-
-    public bool CameraHere = false;
-    public bool CameraOutside = false;
+    private int _reservedCells = -1;
+    
+    
+    public bool cameraHere = false;
+    public bool cameraOutside = false;
     
     // Start is called before the first frame update
     void Awake()
@@ -32,58 +32,91 @@ public class MotionDriver : MonoBehaviour
 
     void Update()
     {
-        if (CameraHere)
+        if (cameraHere)
         {
-            if (Input.GetKey(KeyCode.W) && _myMotionModule.mmStatus==GlobalVariables.MotionStatus.IsWaiting)
+            if (Input.GetKeyDown(KeyCode.W) && _myMotionModule.mmStatus==GlobalVariables.MotionStatus.IsWaiting)
             {
-                if (CheckFreeDestinationCell())
-                    _myMotionModule.MoveForward( transform.position+transform.forward*(HexMetrics.innerRadius*2));
-                
+                int targetNumCell = CheckFreeDestinationCell();
+                if (targetNumCell>=0)
+                    _myMotionModule.MoveForward(targetNumCell);
             }
-            if (Input.GetKey(KeyCode.D) && _myMotionModule.mmStatus==GlobalVariables.MotionStatus.IsWaiting) {
+            if (Input.GetKeyDown(KeyCode.D) && _myMotionModule.mmStatus==GlobalVariables.MotionStatus.IsWaiting) {
                 _myMotionModule.RotateToRight();
             }
-            if (Input.GetKey(KeyCode.A) && _myMotionModule.mmStatus==GlobalVariables.MotionStatus.IsWaiting) {
+            if (Input.GetKeyDown(KeyCode.A) && _myMotionModule.mmStatus==GlobalVariables.MotionStatus.IsWaiting) {
                 _myMotionModule.RotateToLeft();
             }
-            if (Input.GetKey(KeyCode.Alpha1) && this.tag=="Hero") {
+            if (Input.GetKeyDown(KeyCode.Alpha1) && this.CompareTag("Hero")) {
                 SetCameraTo("Robot_1");
                 //Escape  
             }
-            if (Input.GetKey(KeyCode.C))
+            if (Input.GetKeyDown(KeyCode.C))
             {
                 GameObject mainCamera = GameObject.Find("Main Camera");
                 Vector3 outside = transform.forward * 3f;
                 outside.y = outside.y - 3f;
-                if (!CameraOutside) outside = outside * -1f;
+                if (!cameraOutside) outside = outside * -1f;
                 mainCamera.transform.localPosition = mainCamera.transform.localPosition  + outside;
-                CameraOutside = !CameraOutside;
-
+                cameraOutside = !cameraOutside;
             }
-            if (Input.GetKey(KeyCode.Escape) && this.tag != "Hero")
+            if (Input.GetKeyDown(KeyCode.Escape) && !this.CompareTag("Hero"))
             {
                 SetCameraTo("Hero");
             }
         }
+
+        TrackChangesIndicatorMM();
     }
 
-    bool CheckFreeDestinationCell()
+    int CheckFreeDestinationCell()
     {
-        int nowCell = HexMetrics.GetPositionNumFromXY(transform.position.x, transform.position.z);
-        int targetCell = HexGrid.cells[nowCell].neighbors[(int)_myObjectItem.direction];
+        int targetCell = HexGrid.cells[_myObjectItem.CurrentCellPosition].neighbors[(int)_myObjectItem.direction];
         if (targetCell >= 0)
         {
-            print("nowCell="+nowCell+"  targetCell="+targetCell+" direction="+_myObjectItem.direction);
-            return true;
+            
+            if (HexGrid.cells[targetCell].canMove == 2)
+            {
+                HexGrid.cells[targetCell].canMove = 0;
+                HexGrid.cells[_myObjectItem.CurrentCellPosition].canMove = 1;
+                _reservedCells = _myObjectItem.CurrentCellPosition;
+                print("Moving from currentCell["+_myObjectItem.CurrentCellPosition+"] to targetCell["+targetCell+"]");
+                return targetCell;
+            }
+            else if (HexGrid.cells[targetCell].canMove == 1)
+            {
+                print("ATTANTION: клетка cells["+targetCell+"] ВРЕМЕННО занята, надо что то делать");
+                return -1;
+            }
+            else
+            {
+                print("ATTANTION: клетка cells["+targetCell+"] НЕПРОХОДНАЯ, надо что то делать");
+                return -1; 
+            }
         }
         else
         {
-            print("nowCell="+nowCell+"  targetCell="+targetCell+" direction="+_myObjectItem.direction);
             print("ATTANTION: впереди БЕЗДНА");
-            return false;
+            return -1;
         }
-        
-        
+    }
+
+    void TrackChangesIndicatorMM()
+    {
+        if (_myMotionModule.statusChangeIndicator)
+        {
+            print("indicator: Status="+_myMotionModule.mmStatus+" beforStatus="+_myMotionModule.mmBeforeStatus);
+            if (_myMotionModule.mmBeforeStatus == GlobalVariables.MotionStatus.IsBeforeTargetPosition && 
+                _myMotionModule.mmStatus == GlobalVariables.MotionStatus.IsWaiting)
+            {
+                if (_reservedCells >= 0)
+                {
+                    HexGrid.cells[_reservedCells].canMove = 2; 
+                    print("_reservedCells:"+HexGrid.cells[_reservedCells].canMove);
+                }
+            }
+
+            _myMotionModule.statusChangeIndicator = false;
+        } 
     }
 
     void SetCameraTo(string nameOfTheObject)
@@ -109,8 +142,8 @@ public class MotionDriver : MonoBehaviour
                         UnityEngine.Camera.main.transform.position = _eye.transform.position;
                         //mainCamera.transform.localPosition = eye.transform.localPosition;
                         UnityEngine.Camera.main.transform.rotation = _eye.transform.rotation;
-                        CameraHere = false;
-                        _objMotionDriver.CameraHere = true;
+                        cameraHere = false;
+                        _objMotionDriver.cameraHere = true;
 
                 }
                 else print("ATTANTION: eye not found");

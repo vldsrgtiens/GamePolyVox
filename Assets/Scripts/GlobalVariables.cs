@@ -5,7 +5,8 @@ using UnityEngine;
 public class GlobalVariables : MonoBehaviour
 {
     public enum  TypePerson { Hero, Robot, Enemy };
-    public enum  MotionStatus { IsWaiting, IsMoving, IsRotating, IsBeforeTargetPosition, IsBeforeTargetRotation };
+    public enum  MotionStatus { IsWaiting, IsMoving, IsRotating, IsBeforeTargetPosition, IsBeforeTargetRotation, 
+        isError, isPathBlocked, isPathTemporarilyBlocked  };
     public static float angleRotate = 60f;
 
     

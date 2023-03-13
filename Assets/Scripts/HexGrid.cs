@@ -21,17 +21,20 @@ public class HexGrid : MonoBehaviour {
 
 	void Start ()
 	{
+		/*
 		Vector3 center = HexMetrics.GetPositionCenterFromHW(2, 1);
-		print("center: "+center+"  :  "+HexMetrics.GetPositionNumFromXY(13.2f,8f));
-		print("1. 12:"+HexMetrics.GetPositionNumFromXY(13.2f-4.2f, 8f+3.9f));
-		print("2. 13:"+HexMetrics.GetPositionNumFromXY(13.2f-4.2f, 8f+0.1f));
-		print("3. 13:"+HexMetrics.GetPositionNumFromXY(13.2f-4.2f, 8f-0.1f));
-		print("4. 1:"+HexMetrics.GetPositionNumFromXY(13.2f-4.2f, 8f-3.9f));
-		print("5. 14:"+HexMetrics.GetPositionNumFromXY(13.2f+4.2f, 8f+3.9f));
-		print("6. 13:"+HexMetrics.GetPositionNumFromXY(13.2f+4.2f, 8f+0.1f));
-		print("7. 13:"+HexMetrics.GetPositionNumFromXY(13.2f+4.2f, 8f-0.1f));
-		print("8. 3:"+HexMetrics.GetPositionNumFromXY(13.2f+4.2f, 8f-3.9f));
+		//print("center: "+center+"  :  "+HexMetrics.GetPositionNumFromXY(13.2f,8f));
+		print("1. 12:"+HexMetrics.GetPositionNumFromXY(13.2f-4.5f, 8f+3.9f));
+		//print("angle1:"+Vector2.SignedAngle(new Vector2(2f,-4f),new Vector2(1f,-3f)));
 		
+		print("2. 13:"+HexMetrics.GetPositionNumFromXY(13.2f-4.1f, 8f+0.1f));
+		print("3. 13:"+HexMetrics.GetPositionNumFromXY(13.2f-4.1f, 8f-0.1f));
+		print("4. 1:"+HexMetrics.GetPositionNumFromXY(13.2f-4.5f, 8f-3.9f));
+		print("5. 14:"+HexMetrics.GetPositionNumFromXY(13.2f+4.5f, 8f+3.9f));
+		print("6. 13:"+HexMetrics.GetPositionNumFromXY(13.2f+4.1f, 8f+0.1f));
+		print("7. 13:"+HexMetrics.GetPositionNumFromXY(13.2f+4.1f, 8f-0.1f));
+		print("8. 3:"+HexMetrics.GetPositionNumFromXY(13.2f+4.5f, 8f-3.9f));
+		*/
 		
 		gridCanvas = GetComponentInChildren<Canvas>();
 
@@ -89,7 +92,7 @@ public class HexGrid : MonoBehaviour {
 			{
 				str = str + ":" + cells[i].neighbors[x];
 			}
-			print("cells[" + i + "]  "+str);
+			//print("cells[" + i + "]  "+str);
 		}
 
 		FillTerrain();
@@ -158,6 +161,7 @@ public class HexGrid : MonoBehaviour {
 		cell.transform.localPosition = position;
 		cells[i].myIndex = i;
 		cells[i].myPosition = position;
+		cells[i].canMove = 2;
 		cells[i].myHexCanvas = Instantiate<GameObject>(hexCanvasPrefab);
 		cells[i].myHexCanvas.transform.position=position+new Vector3(0f,0.1f,0f);
 		//cells[i].myHexCanvas.transform.position=position;
