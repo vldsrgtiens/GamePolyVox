@@ -18,11 +18,13 @@ public class MotionModule : MonoBehaviour
     Rigidbody _mmRigidbody;
     Transform _mmTransform;
     ObjectItem _mmObjectItem;
+    Animator _animator;
 
     void Awake()
     {
         _mmRigidbody = GetComponent<Rigidbody>();
         _mmObjectItem = GetComponent<ObjectItem>();
+        _animator = GetComponent<Animator>();
         _mmSpeed = _mmObjectItem.speed;
     }
     
@@ -48,6 +50,7 @@ public class MotionModule : MonoBehaviour
                 changeStatus(GlobalVariables.MotionStatus.IsBeforeTargetPosition);
             }
             _mmRigidbody.MovePosition(transform.position + heading * step);
+            
         }
         
         //==============================
@@ -58,6 +61,7 @@ public class MotionModule : MonoBehaviour
             _mmRigidbody.velocity = Vector3.zero;
             _mmObjectItem.CurrentCellPosition = mmTargetCellPosition;
             changeStatus(GlobalVariables.MotionStatus.IsWaiting);
+            _animator.SetBool("Forward",false);
         } 
 
         //==============================
@@ -66,7 +70,7 @@ public class MotionModule : MonoBehaviour
         {
             float _delta = MathF.Abs((GlobalVariables.angleRotate * (int)mmTargetDirection) - _oldRotation) ;
             float _rot = (_mmSpeed / 5) * _directionOfRotation;
-            if (_delta < 1.5f) 
+            if (_delta <= 3f) 
             {
                 changeStatus(GlobalVariables.MotionStatus.IsBeforeTargetRotation);
             }
@@ -83,6 +87,8 @@ public class MotionModule : MonoBehaviour
             transform.rotation = Quaternion.Euler(_rotate);
             _mmObjectItem.direction = mmTargetDirection;
             changeStatus(GlobalVariables.MotionStatus.IsWaiting);
+            _animator.SetBool("Right",false);
+            _animator.SetBool("Left",false);
         }
     }
 
@@ -90,6 +96,7 @@ public class MotionModule : MonoBehaviour
     {
         mmTargetCellPosition = targetCell;
         changeStatus(GlobalVariables.MotionStatus.IsMoving);
+        _animator.SetBool("Forward",true);
     }
         
     public void MoveBack(Rigidbody rb,Vector3 vector3To, float speed)
@@ -105,6 +112,7 @@ public class MotionModule : MonoBehaviour
         _oldRotation = GlobalVariables.angleRotate * (int)_mmObjectItem.direction;
         _directionOfRotation = -1f;
         changeStatus(GlobalVariables.MotionStatus.IsRotating);
+        _animator.SetBool("Left",true);
     }
     public void RotateToRight()
     {
@@ -113,6 +121,7 @@ public class MotionModule : MonoBehaviour
         _oldRotation = GlobalVariables.angleRotate * (int)_mmObjectItem.direction;
         _directionOfRotation = 1f;
         changeStatus(GlobalVariables.MotionStatus.IsRotating);
+        _animator.SetBool("Right",true);
     }
 
     public void changeStatus(GlobalVariables.MotionStatus newStatus)

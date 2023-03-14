@@ -53,7 +53,7 @@ public class MotionDriver : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.C))
             {
                 GameObject mainCamera = GameObject.Find("Main Camera");//UnityEngine.Camera.main.
-                Vector3 outside = Vector3.back*-3f;
+                Vector3 outside = new Vector3(0f,4f,4f);
                 //Vector3 outsideAngle = mainCamera.transform.eulerAngles
                 outside.y = outside.y - 6f;
                 if (!cameraOutside) outside = outside * -1f;
