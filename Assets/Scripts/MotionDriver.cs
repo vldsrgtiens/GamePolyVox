@@ -34,7 +34,7 @@ public class MotionDriver : MonoBehaviour
     {
         if (cameraHere)
         {
-            if (Input.GetKeyDown(KeyCode.W) && _myMotionModule.mmStatus==GlobalVariables.MotionStatus.IsWaiting)
+            if (Input.GetKey(KeyCode.W) && _myMotionModule.mmStatus==GlobalVariables.MotionStatus.IsWaiting)
             {
                 int targetNumCell = CheckFreeDestinationCell();
                 if (targetNumCell>=0)
@@ -73,7 +73,9 @@ public class MotionDriver : MonoBehaviour
 
     int CheckFreeDestinationCell()
     {
-        int targetCell = HexGrid.cells[_myObjectItem.CurrentCellPosition].neighbors[(int)_myObjectItem.direction];
+
+        var targetCell = HexGrid.cells[_myObjectItem.CurrentCellPosition].neighbors[(int)((float)(Direction.Angle)_myObjectItem.direction / 60f)];
+        print("_myObjectItem.direction="+_myObjectItem.direction.GetHashCode()+" targetCell="+targetCell);
         if (targetCell >= 0)
         {
             
@@ -122,7 +124,7 @@ public class MotionDriver : MonoBehaviour
         } 
     }
 
-    void SetCameraTo(string nameOfTheObject)
+    private void SetCameraTo(string nameOfTheObject)
     {
         GameObject obj=GameObject.Find(nameOfTheObject);
         _eye = null;        
