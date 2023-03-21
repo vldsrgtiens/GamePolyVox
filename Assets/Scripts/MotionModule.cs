@@ -25,7 +25,7 @@ public class MotionModule : MonoBehaviour
         _mmRigidbody = GetComponent<Rigidbody>();
         _mmObjectItem = GetComponent<ObjectItem>();
         _animator = GetComponent<Animator>();
-        _mmSpeed = _mmObjectItem.speed;
+        _mmSpeed = _mmObjectItem.speedPercent * GlobalVariables.SpeedMax;
     }
 
     private void Update()
@@ -54,9 +54,8 @@ public class MotionModule : MonoBehaviour
                 changeStatus(GlobalVariables.MotionStatus.IsBeforeTargetPosition);
             }
             _mmRigidbody.MovePosition(transform.position + heading * step);
-
         }
-        
+       
         //==============================
 
         if (mmStatus == GlobalVariables.MotionStatus.IsBeforeTargetPosition)
@@ -65,7 +64,10 @@ public class MotionModule : MonoBehaviour
             _mmRigidbody.velocity = Vector3.zero;
             _mmObjectItem.CurrentCellPosition = mmTargetCellPosition;
             changeStatus(GlobalVariables.MotionStatus.IsWaiting);
-            _animator.SetBool("Forward",false);
+            if (_animator) _animator.SetBool("Forward",false);
+            
+            
+
         } 
 
         //==============================
@@ -82,7 +84,6 @@ public class MotionModule : MonoBehaviour
             
             transform.Rotate(0f,step,0f);
             _oldRotation = transform.eulerAngles.y;
-            print("delta="+delta+" step="+step);
         } 
         
         //==============================
@@ -95,8 +96,11 @@ public class MotionModule : MonoBehaviour
             transform.rotation = Quaternion.Euler(_rotate);
             _mmObjectItem.direction = mmTargetDirection;
             changeStatus(GlobalVariables.MotionStatus.IsWaiting);
-            _animator.SetBool("Right",false);
-            _animator.SetBool("Left",false);
+            if (_animator)
+            {
+                _animator.SetBool("Right", false);
+                _animator.SetBool("Left", false);
+            }
         }
     }
 
@@ -104,14 +108,16 @@ public class MotionModule : MonoBehaviour
     {
         mmTargetCellPosition = targetCell;
         changeStatus(GlobalVariables.MotionStatus.IsMoving);
-        _animator.SetBool("Forward",true);
+        if (_animator) _animator.SetBool("Forward",true);
     }
-        
-    public void MoveBack(Rigidbody rb,Vector3 vector3To, float speed)
+    
+    public void MoveBack(int targetCell)
     {
-        //rb.velocity = -1 * vector3To * speed;
-        //is_moving = true;
+        mmTargetCellPosition = targetCell;
+        changeStatus(GlobalVariables.MotionStatus.IsMoving);
+        if (_animator) _animator.SetBool("MoveBack",true);
     }
+    
 
     public void RotateToLeft()
     {
@@ -119,8 +125,7 @@ public class MotionModule : MonoBehaviour
         _directionOfRotation = -1f;
         _oldRotation = (Direction.Angle)_mmObjectItem.direction;
         changeStatus(GlobalVariables.MotionStatus.IsRotating);
-        print("_mmObjectItem.direction="+(Direction.Angle)_mmObjectItem.direction+" mmTargetDirection="+(Direction.Angle)mmTargetDirection);
-        _animator.SetBool("Left",true);
+        if (_animator) _animator.SetBool("Left",true);
         
     }
     public void RotateToRight()
@@ -129,8 +134,7 @@ public class MotionModule : MonoBehaviour
         mmTargetDirection = _mmObjectItem.direction.RelativeOf(Direction.Neast);
         _directionOfRotation = 1f;
         changeStatus(GlobalVariables.MotionStatus.IsRotating);
-        print("_mmObjectItem.direction="+(Direction.Angle)_mmObjectItem.direction+" mmTargetDirection="+(Direction.Angle)mmTargetDirection);
-        _animator.SetBool("Right",true);
+        if (_animator) _animator.SetBool("Right",true);
         
     }
 
@@ -144,15 +148,7 @@ public class MotionModule : MonoBehaviour
     
     public void RotateTo(Direction target)
     {
-        //player.transform.RotateAround(player.transform.position,player.transform.up,_rotation_y*Time.deltaTime);
-        mmTargetDirection = target;
-        _oldRotation = GlobalVariables.angleRotate * _mmObjectItem.direction.GetHashCode();
-        float t1 = Mathf.Abs((mmTargetDirection.GetHashCode() * GlobalVariables.angleRotate) - (_oldRotation));
-        float t2 = Mathf.Abs(mmTargetDirection.GetHashCode() * GlobalVariables.angleRotate - (360f + _oldRotation));
-        if (t1 < t2)
-            _directionOfRotation = 1f;
-        else
-            _directionOfRotation = -1f;
+        
 
     }
 }

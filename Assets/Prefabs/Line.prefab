@@ -55,6 +55,7 @@ LineRenderer:
   - {fileID: 2100000, guid: 380f0e3c670f2cc468841ee155ac9f9b, type: 2}
   - {fileID: 2100000, guid: 4919ab6415356d04c8d71714cecd7cc3, type: 2}
   - {fileID: 2100000, guid: 8f9447b5fed5ec247b18048d2b24bf32, type: 2}
+  - {fileID: 2100000, guid: 3100a4a7f15f88549a17f7dec2d8027c, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

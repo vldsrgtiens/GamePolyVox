@@ -124,12 +124,14 @@ public class HexGrid : MonoBehaviour {
 					cells[i].layer1 = ObjectList.AddItem(position, iRot,stenaLevel1);
 					cells[i].layer2 = ObjectList.AddItem(position+ new Vector3(0f,4.6f,0f), iRot,stenaLevel2);
 					cells[i].canMove = 0;
+					ChangeColorHexCell(i, new Color(255f, 0f, 0f, 128f));
 				}
 
 				if (MapHex.GridFull[x, z].Length == 3)
 				{
 					cells[i].layer2 = ObjectList.AddItem(position + new Vector3(0f,24.6f,0f), 0f,rock1);
 					cells[i].canMove = 0;
+					ChangeColorHexCell(i, new Color(255f, 0f, 0f, 128f));
 				}
 				
 				if (MapHex.GridFull[x, z].Length == 4)
@@ -140,12 +142,14 @@ public class HexGrid : MonoBehaviour {
 					cells[i].layer1 = ObjectList.AddItem(position, iRot+180f,stenaLevel1_2);
 					cells[i].layer2 = ObjectList.AddItem(position+ new Vector3(0f,4.8f,0f), iRot,stenaLevel2_1);
 					cells[i].canMove = 0;
+					ChangeColorHexCell(i, new Color(255f, 0f, 0f, 128f));
 				}
 				
 				if (MapHex.GridFull[x, z].Length > 4)
 				{
 					cells[i].layer2 = ObjectList.AddItem(position+ new Vector3(0f,24.6f,0f), 0f,grass);
 					cells[i].canMove = 0;
+					ChangeColorHexCell(i, new Color(255f, 0f, 0f, 128f));
 				}
 					
 				i++;
@@ -164,7 +168,7 @@ public class HexGrid : MonoBehaviour {
 		cells[i].canMove = 2;
 		cells[i].myHexCanvas = Instantiate<GameObject>(hexCanvasPrefab);
 		cells[i].myHexCanvas.transform.position=position+new Vector3(0f,0.1f,0f);
-		//cells[i].myHexCanvas.transform.position=position;
+		ChangeColorHexCell(i, new Color(0f, 255f, 0f, 0f));
 		
 		
 
@@ -175,5 +179,9 @@ public class HexGrid : MonoBehaviour {
 		label.text = x.ToString() + ":" + z.ToString()+"\n["+i+"]";
 	}
 
-
+	private void ChangeColorHexCell(int _cellNum, Color _color)
+	{
+		var cellRender = cells[_cellNum].myHexCanvas.GetComponent<MeshRenderer>();
+		cellRender.material.color = _color;
+	}
 }

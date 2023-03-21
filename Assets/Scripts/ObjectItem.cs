@@ -8,7 +8,7 @@ public class ObjectItem : MonoBehaviour
     public int CurrentCellPosition = 0;
     public Direction direction = Direction.North;
     
-    public float speed = 5.0f;
+    public float speedPercent = 0.7f;
     void Awake()
     {
         

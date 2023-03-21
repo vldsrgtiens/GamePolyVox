@@ -19,7 +19,8 @@ public readonly struct Direction
     {
         _number = (number % DirectionNumber + DirectionNumber) % DirectionNumber;
     }
-
+    
+    public static implicit operator int(Direction it) => it._number;
     public static explicit operator Angle(Direction it) => it._number * Angle.MaxAngle / DirectionNumber;
 
     public static bool operator ==(Direction a, Direction b) => a._number == b._number;

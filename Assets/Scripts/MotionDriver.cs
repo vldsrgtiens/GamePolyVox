@@ -3,12 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MotionDriver : MonoBehaviour
+public class MotionDriver : MonoBehaviour, ITake
 {
     private MotionDriver _objMotionDriver;
     private MotionModule _myMotionModule;
     private ObjectItem _myObjectItem;
     private GameObject _eye;
+    private GameObject _eAction;
     private int _reservedCells = -1;
     
     
@@ -20,6 +21,7 @@ public class MotionDriver : MonoBehaviour
     {
         _myMotionModule = GetComponent<MotionModule>();
         _myObjectItem = GetComponent<ObjectItem>();
+        
         if (_myMotionModule == null)
         {
             Debug.Log("ATTANTION: MotionModule отсутствует");
@@ -36,9 +38,15 @@ public class MotionDriver : MonoBehaviour
         {
             if (Input.GetKey(KeyCode.W) && _myMotionModule.mmStatus==GlobalVariables.MotionStatus.IsWaiting)
             {
-                int targetNumCell = CheckFreeDestinationCell();
+                int targetNumCell = CheckFreeDestinationCell(true);
                 if (targetNumCell>=0)
                     _myMotionModule.MoveForward(targetNumCell);
+            }
+            if (Input.GetKey(KeyCode.S) && _myMotionModule.mmStatus==GlobalVariables.MotionStatus.IsWaiting)
+            {
+                int targetNumCell = CheckFreeDestinationCell(false);
+                if (targetNumCell>=0)
+                    _myMotionModule.MoveBack(targetNumCell);
             }
             if (Input.GetKeyDown(KeyCode.D) && _myMotionModule.mmStatus==GlobalVariables.MotionStatus.IsWaiting) {
                 _myMotionModule.RotateToRight();
@@ -71,19 +79,30 @@ public class MotionDriver : MonoBehaviour
         TrackChangesIndicatorMM();
     }
 
-    int CheckFreeDestinationCell()
+    int CheckFreeDestinationCell(bool _driveForvard)
     {
+        var targetCell = -1;
+        if (_driveForvard)
+        {
+            targetCell = HexGrid.cells[_myObjectItem.CurrentCellPosition].neighbors[(int)(_myObjectItem.direction)];
 
-        var targetCell = HexGrid.cells[_myObjectItem.CurrentCellPosition].neighbors[(int)((float)(Direction.Angle)_myObjectItem.direction / 60f)];
-        print("_myObjectItem.direction="+_myObjectItem.direction.GetHashCode()+" targetCell="+targetCell);
+        }
+        else
+        {
+            targetCell = HexGrid.cells[_myObjectItem.CurrentCellPosition].neighbors[(int)(_myObjectItem.direction.RelativeOf(Direction.South))]; 
+        }
+
         if (targetCell >= 0)
         {
             
             if (HexGrid.cells[targetCell].canMove == 2)
             {
                 HexGrid.cells[targetCell].canMove = 0;
-                HexGrid.cells[_myObjectItem.CurrentCellPosition].canMove = 1;
+                ChangeColorHexCell(targetCell,new Color (255f, 0f, 0f, 128f));
                 _reservedCells = _myObjectItem.CurrentCellPosition;
+                HexGrid.cells[_reservedCells].canMove = 1;
+                ChangeColorHexCell(_reservedCells,new Color (255f, 255f, 0f, 128f));
+                
                 print("Moving from currentCell["+_myObjectItem.CurrentCellPosition+"] to targetCell["+targetCell+"]");
                 return targetCell;
             }
@@ -117,11 +136,21 @@ public class MotionDriver : MonoBehaviour
                 {
                     HexGrid.cells[_reservedCells].canMove = 2; 
                     print("_reservedCells:"+HexGrid.cells[_reservedCells].canMove);
+                    ChangeColorHexCell(_reservedCells,new Color (0f, 255f, 0f, 128f));
+                    _reservedCells = -1;
                 }
             }
 
             _myMotionModule.statusChangeIndicator = false;
         } 
+    }
+
+    private void ChangeColorHexCell(int _cellNum, Color _color)
+    {
+        print("befor getComponent");
+        var cellRender = HexGrid.cells[_cellNum].myHexCanvas.GetComponent<MeshRenderer>();
+        cellRender.material.color = _color;
+        print("after getComponent");
     }
 
     private void SetCameraTo(string nameOfTheObject)
@@ -155,5 +184,10 @@ public class MotionDriver : MonoBehaviour
             }
             else print("ATTANTION: MotionDriver not found");
         }
+    }
+
+    void ITake.ApplyTake(GameObject holder, Vector3 handPosition)
+    {
+        
     }
 }
