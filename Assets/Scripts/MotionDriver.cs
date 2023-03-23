@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MotionDriver : MonoBehaviour, ITake
+public class MotionDriver : MonoBehaviour
 {
     private MotionDriver _objMotionDriver;
     private MotionModule _myMotionModule;
@@ -186,8 +186,5 @@ public class MotionDriver : MonoBehaviour, ITake
         }
     }
 
-    void ITake.ApplyTake(GameObject holder, Vector3 handPosition)
-    {
-        
-    }
+
 }
