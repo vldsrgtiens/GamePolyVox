@@ -5,12 +5,12 @@ public class HexGrid : MonoBehaviour {
 	
 	public HexCell cellPrefab;
 	public GameObject hexCanvasPrefab;
-	public ObjectItem grass;
-	public ObjectItem stenaLevel1;
-	public ObjectItem stenaLevel2;
-	public ObjectItem stenaLevel1_2;
-	public ObjectItem stenaLevel2_1;
-	public ObjectItem rock1;
+	public ObjectItemBase grass;
+	public ObjectItemBase stenaLevel1;
+	public ObjectItemBase stenaLevel2;
+	public ObjectItemBase stenaLevel1_2;
+	public ObjectItemBase stenaLevel2_1;
+	public ObjectItemBase rock1;
 	public Text cellLabelPrefab;
 	public static float qqq = 5f;
 

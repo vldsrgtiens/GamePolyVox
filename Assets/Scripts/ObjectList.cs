@@ -4,15 +4,15 @@ using UnityEngine;
 
 public class ObjectList : MonoBehaviour
 {
-    public static Dictionary<int, ObjectItem> dObjectList = new Dictionary<int, ObjectItem>();
+    public static Dictionary<int, ObjectItemBase> dObjectList = new Dictionary<int, ObjectItemBase>();
     public static int indexItem = 0;
 
 
-    public static int AddItem(Vector3 posItem, float rotItem, ObjectItem objPrefab)
+    public static int AddItem(Vector3 posItem, float rotItem, ObjectItemBase objPrefab)
     {
         
         
-        dObjectList.Add(indexItem,Instantiate<ObjectItem>(objPrefab));
+        dObjectList.Add(indexItem,Instantiate<ObjectItemBase>(objPrefab));
         dObjectList[indexItem].transform.localPosition = posItem;
         dObjectList[indexItem].transform.rotation = Quaternion.Euler(0f,rotItem,0f);
 

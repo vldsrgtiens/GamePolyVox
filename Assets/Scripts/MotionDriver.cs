@@ -7,7 +7,7 @@ public class MotionDriver : MonoBehaviour
 {
     private MotionDriver _objMotionDriver;
     private MotionModule _myMotionModule;
-    private ObjectItem _myObjectItem;
+    private ObjectItemBase _myObjectItem;
     private GameObject _eye;
     private GameObject _eAction;
     private int _reservedCells = -1;
@@ -20,7 +20,7 @@ public class MotionDriver : MonoBehaviour
     void Awake()
     {
         _myMotionModule = GetComponent<MotionModule>();
-        _myObjectItem = GetComponent<ObjectItem>();
+        _myObjectItem = GetComponent<ObjectItemBase>();
         
         if (_myMotionModule == null)
         {

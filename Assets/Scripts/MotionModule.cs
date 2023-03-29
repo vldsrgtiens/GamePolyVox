@@ -17,13 +17,13 @@ public class MotionModule : MonoBehaviour
 
     Rigidbody _mmRigidbody;
     Transform _mmTransform;
-    ObjectItem _mmObjectItem;
+    ObjectItemBase _mmObjectItem;
     Animator _animator;
 
     void Awake()
     {
         _mmRigidbody = GetComponent<Rigidbody>();
-        _mmObjectItem = GetComponent<ObjectItem>();
+        _mmObjectItem = GetComponent<ObjectItemBase>();
         _animator = GetComponent<Animator>();
         _mmSpeed = _mmObjectItem.speedPercent * GlobalVariables.SpeedMax;
     }

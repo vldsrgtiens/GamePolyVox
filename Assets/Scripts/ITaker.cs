@@ -4,5 +4,7 @@ using UnityEngine;
 
 public interface ITaker
 {
-    public TModuleTaker.StatusTaker ApplyTake(string requiredObject, TModuleTaker taker, Transform takerParent, Vector3 handPosition);
+    public GlobalVariables.StatusAction ApplyTake(GlobalVariables.StatusAction sAction,string requiredObject, TModuleTaker taker);
 }
+
+

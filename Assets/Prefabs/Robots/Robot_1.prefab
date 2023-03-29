@@ -810,9 +810,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   canMove: 1
-  CurrentCellPosition: 11
-  direction: 0
-  speed: 5
+  CurrentCellPosition: 0
+  Weight: 1
+  Volume: 1
+  nameItem: 0
+  speedPercent: 0.7
 --- !u!114 &2423470569881215928
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -829,7 +831,6 @@ MonoBehaviour:
   mmBeforeStatus: 0
   statusChangeIndicator: 0
   mmTargetCellPosition: -1
-  mmTargetDirection: 0
 --- !u!114 &2075690700926108894
 MonoBehaviour:
   m_ObjectHideFlags: 0
