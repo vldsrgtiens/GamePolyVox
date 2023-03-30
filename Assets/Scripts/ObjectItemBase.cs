@@ -20,7 +20,7 @@ public class ObjectItemBase : MonoBehaviour,ITaker//класс для прост
         _itemTransform = GetComponent<Transform>();
     }
 
-    public virtual GlobalVariables.StatusAction ApplyTake(GlobalVariables.StatusAction sAction, string requiredObject, TModuleTaker taker)
+    public virtual GlobalVariables.StatusAction ApplyTake(GlobalVariables.StatusAction sAction, string requiredObject, ObjectItemModuleTaker taker)
     {
         if (requiredObject == nameItem.ToString() + ChildName.ToString())
         {

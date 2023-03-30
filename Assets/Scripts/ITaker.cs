@@ -4,7 +4,7 @@ using UnityEngine;
 
 public interface ITaker
 {
-    public GlobalVariables.StatusAction ApplyTake(GlobalVariables.StatusAction sAction,string requiredObject, TModuleTaker taker);
+    public GlobalVariables.StatusAction ApplyTake(GlobalVariables.StatusAction sAction,string requiredObject, ObjectItemModuleTaker taker);
 }
 
 
